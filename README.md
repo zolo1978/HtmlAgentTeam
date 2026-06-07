@@ -99,11 +99,40 @@ harp/
 
 ---
 
+## 开发计划
+
+> 总计 10 个 Sprint，约 16 周完成 MVP。完整任务清单见 [docs/TASK_LIST.md](docs/TASK_LIST.md)。
+
+| Sprint | 周期 | 主要目标 | 关键产出 |
+|--------|------|---------|---------|
+| **S0** | Week 1-2 | 基础设施 + Auth + Agent CRUD | DB 迁移跑通、JWT 登录、Agent 创建/激活 |
+| **S1** | Week 3-4 | 记忆系统基础 | 四层记忆写入/检索、pgvector 索引、Token 注入预算 |
+| **S2** | Week 5 | Token 优化 | Semantic Cache、Prefix Cache、LLMLingua-2 压缩 |
+| **S3** | Week 6-7 | 任务执行引擎 | Task 状态机、ReAct executor、NATS 事件总线 |
+| **S4** | Week 8 | Skill 系统 | SKILL.md 解析、Skill 执行、Agent 自建 Skill |
+| **S5** | Week 9-10 | SOP + Prolog | DAG 执行器、5 个 Prolog 业务规则文件接入 |
+| **S6** | Week 11-12 | Reflection + Growth | 反思引擎、GrowthScore、L1-L6 升级逻辑 |
+| **S7** | Week 13-14 | 前端核心页面 | Agent 列表/详情、任务面板、记忆可视化 |
+| **S8** | Week 15 | 前端完善 | 成长曲线、技能树、实时 WebSocket 推送 |
+| **S9** | Week 16 | 联调 + 部署 | Railway 部署、E2E 测试、性能基准 |
+
+### 当前进度
+
+```
+S0  ░░░░░░░░░░  0%   ← 下一步启动
+S1  ░░░░░░░░░░  0%
+...
+```
+
+> 每个 Sprint 采用 4 线并行开发（BE-A / BE-B / FE / DevOps），详见任务清单。
+
+---
+
 ## 文档
 
 - [技术设计文档 (TDD)](docs/TDD.md)
 - [技术规格详细](docs/TECH_SPEC.md) — DDL / WebSocket / API / Prolog / 错误码 / 部署 / SKILL.md 模板
-- [实施任务总清单](docs/TASK_LIST.md) — 可执行的逐条任务，含代码萃取路径
+- [实施任务总清单](docs/TASK_LIST.md) — 212 条可执行任务，含代码萃取路径和 Sprint 分配
 
 ---
 
