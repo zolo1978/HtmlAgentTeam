@@ -1,5 +1,9 @@
 # HARP — HTML Agent Runtime Platform
 
+<p align="center">
+  <img src="docs/banner.svg" alt="HARP Banner" width="100%"/>
+</p>
+
 > **HTML = Agent 的持久化家园**
 
 HARP 是一个持久化 AI Agent 运行时平台。Agent 不是一次性调用，而是拥有持久身份、记忆、成长轨迹和反思能力的软件实体。
