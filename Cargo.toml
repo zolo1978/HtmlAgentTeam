@@ -1,0 +1,55 @@
+[workspace]
+members = ["backend"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["HARP Team"]
+license = "MIT"
+
+[workspace.dependencies]
+# HTTP
+axum = "0.7"
+tower = { version = "0.5", features = ["full"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "timeout"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Database
+sqlx = { version = "0.7", features = ["postgres", "runtime-tokio", "uuid", "chrono", "json"] }
+
+# LLM / Agent
+rig-core = { version = "0.38", features = ["all"] }
+rig-postgres = "0.38"
+rig-memory = "0.38"
+autoagents = "0.32"
+swiftide = { version = "0.38", features = ["postgres", "redis", "openai"] }
+
+# Prolog
+scryer-prolog = "0.9"
+
+# Event Bus
+async-nats = "0.35"
+
+# Auth
+jsonwebtoken = "9"
+argon2 = "0.5"
+
+# Utilities
+uuid = { version = "1", features = ["v4", "v7", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "2"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+validator = { version = "0.18", features = ["derive"] }
+base64 = "0.22"
+
+# Rate limiting
+tower-governor = "0.4"

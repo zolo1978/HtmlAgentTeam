@@ -1,0 +1,33 @@
+[package]
+name = "harp-backend"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+axum.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sqlx.workspace = true
+rig-core.workspace = true
+rig-postgres.workspace = true
+rig-memory.workspace = true
+autoagents.workspace = true
+async-nats.workspace = true
+jsonwebtoken.workspace = true
+argon2.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+validator.workspace = true
+base64.workspace = true
+tower-governor.workspace = true
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full", "test-util"] }
+mockall = "0.13"
