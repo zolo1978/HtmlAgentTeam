@@ -1,165 +1,196 @@
-# HARP — HTML Agent Runtime Platform
-
 <p align="center">
-  <img src="docs/banner.svg" alt="HARP Banner" width="100%"/>
+  <img src="docs/banner.svg" alt="HARP — HTML Agent Runtime Platform" width="100%"/>
 </p>
 
-> **HTML = Agent 的持久化家园**
+<p align="center">
+  <a href="https://github.com/zolo1978/HtmlAgentTeam/actions"><img src="https://img.shields.io/github/actions/workflow/status/zolo1978/HtmlAgentTeam/ci.yml?branch=main&style=flat-square&label=CI&color=4f46e5" alt="CI"/></a>
+  <img src="https://img.shields.io/badge/Rust-1.79+-fb923c?style=flat-square&logo=rust&logoColor=white" alt="Rust"/>
+  <img src="https://img.shields.io/badge/Next.js-15-f472b6?style=flat-square&logo=next.js&logoColor=white" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-16+pgvector-38bdf8?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/status-in%20development-fbbf24?style=flat-square" alt="Status"/>
+  <img src="https://img.shields.io/badge/license-MIT-a78bfa?style=flat-square" alt="License"/>
+</p>
 
-HARP 是一个持久化 AI Agent 运行时平台。Agent 不是一次性调用，而是拥有持久身份、记忆、成长轨迹和反思能力的软件实体。
+<br/>
+
+> **AI Agents are not tools — they are persistent software entities with identity, memory, and growth.**
+
+HARP is an open-source **persistent Agent runtime platform**. Every Agent lives in its own HTML home, accumulates memories across sessions, reflects on its work, levels up over time, and executes complex workflows through a typed SOP engine — all backed by a three-layer token cache that cuts LLM costs by up to 90%.
 
 ---
 
-## 核心理念
+## Why HARP?
+
+Most Agent frameworks treat each run as stateless. HARP is built on the opposite premise:
+
+| Conventional Agents | HARP Agents |
+|---------------------|-------------|
+| Stateless per call | Persistent across sessions |
+| No memory between runs | 4-layer memory with vector retrieval |
+| Fixed capability | L1–L6 growth system |
+| No self-improvement | Structured reflection engine |
+| Ad-hoc tool use | Typed SKILL.md + Prolog rule engine |
+| Full LLM cost every time | 75–90% cost reduction via 3-layer cache |
+
+---
+
+## Core Concepts
+
+### Agent Lifecycle
 
 ```
-HTML = Agent 的持久化家园
-一个 Agent = 一个有灵魂的软件实体，永久存在于云端
+Created ──▶ Activated ──▶ Working ──▶ Reflecting ──▶ Evolving ──▶ Activated
+                                                            │
+                                               Failed ◀────┤ (recoverable)
+                                              Archived ◀───┘ (terminal)
 ```
 
-每个 Agent 具备：
-- 🧠 **持久记忆**：Working / Short-Term / Long-Term / Organization 四层
-- 📈 **成长体系**：L1-L6 等级，GrowthScore 驱动升级
-- 🔁 **反思引擎**：任务完成后自动反思，提炼洞见
-- 🔧 **技能系统**：SKILL.md 定义，Agent 运行时可自建技能
-- 🧩 **Prolog 推理**：任务分配/升级/SOP 条件由逻辑规则驱动
+### Memory Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│  Working Memory      (current task context)          │
+├─────────────────────────────────────────────────────┤
+│  Short-Term Memory   (top-3, score ≥ 0.75)          │
+├─────────────────────────────────────────────────────┤
+│  Long-Term Memory    (top-2, score ≥ 0.80)          │
+├─────────────────────────────────────────────────────┤
+│  Organization Memory (top-1, score ≥ 0.85)          │
+└─────────────────────────────────────────────────────┘
+        Total injection budget: 2,000 tokens
+```
+
+### Token Cost Optimization
+
+```
+Request
+  ├─▶ Semantic Cache   (pgvector cosine ≥ 0.92) ──▶ return cached response  ✦ free
+  ├─▶ Prefix Cache     (Anthropic cache_control)  ──▶ $0.30/M vs $3.00/M   ✦ 90% off
+  └─▶ LLM              (LLMLingua-2 compression)  ──▶ 4–20× token reduction
+```
+
+Estimated cost for 100 active agents: **$1.2–3.6 / day** (vs. ~$12/day without caching)
 
 ---
 
-## 技术栈
+## Tech Stack
 
-| 层级 | 技术 |
-|------|------|
-| 后端运行时 | Rust + Tokio + Axum 0.7 |
-| LLM 客户端 | rig-core 0.38（20+ providers）|
-| 向量存储 | PostgreSQL 16 + pgvector |
-| RAG Pipeline | swiftide 0.38 |
-| Agent 执行 | autoagents 0.32（ReAct）|
-| 记忆注入 | rig-memory 0.38（TokenWindowMemory）|
-| 逻辑推理 | scryer-prolog 0.9（纯 Rust）|
-| 事件总线 | NATS JetStream |
-| 前端 | Next.js 15 + Zustand + shadcn/ui |
-| 部署 | Railway（MVP）→ Fly.io → K8s |
+| Layer | Technology |
+|-------|-----------|
+| **Runtime** | Rust · Tokio · Axum 0.7 |
+| **LLM Client** | [rig-core](https://github.com/0xPlaygrounds/rig) 0.38 · 20+ providers |
+| **Memory Store** | PostgreSQL 16 · pgvector · swiftide 0.38 |
+| **Agent Execution** | autoagents 0.32 (ReAct loop) |
+| **Memory Injection** | rig-memory 0.38 · TokenWindowMemory |
+| **Logic Engine** | scryer-prolog 0.9 (pure Rust) |
+| **Event Bus** | NATS JetStream |
+| **Frontend** | Next.js 15 · Zustand · shadcn/ui · Framer Motion |
+| **Deployment** | Railway (MVP) → Fly.io → Kubernetes |
 
 ---
 
-## 快速启动（开发环境）
+## Getting Started
+
+**Prerequisites:** Rust 1.79+, Node.js 22+, Docker
 
 ```bash
-# 1. 复制环境变量
+# Clone
+git clone https://github.com/zolo1978/HtmlAgentTeam.git && cd HtmlAgentTeam
+
+# Configure environment
 cp .env.example .env
-# 填入 OPENAI_API_KEY, ANTHROPIC_API_KEY, JWT_SECRET
+# → Fill in OPENAI_API_KEY, ANTHROPIC_API_KEY, JWT_SECRET
 
-# 2. 启动基础设施
-cd infra && docker compose up -d
+# Start infrastructure (PostgreSQL + Redis + NATS)
+cd infra && docker compose up -d && cd ..
 
-# 3. 启动后端
+# Run backend
 cd backend && cargo run
 
-# 4. 启动前端
+# Run frontend (new terminal)
 cd frontend && npm install && npm run dev
 ```
 
-访问 http://localhost:3000
+Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 项目结构
+## Project Structure
 
 ```
-harp/
-├── backend/          # Rust 后端（Axum + sqlx + rig + swiftide）
+.
+├── backend/                  # Rust — Axum API server
 │   ├── src/
-│   │   ├── api/      # HTTP 路由（36 个端点）
-│   │   ├── agent/    # Agent 状态机 + 生命周期
-│   │   ├── auth/     # JWT 认证（Access 15min / Refresh 7day）
-│   │   ├── memory/   # 四层记忆 + 向量检索 + Token 注入预算
-│   │   ├── skill/    # SKILL.md 解析 + 执行
-│   │   ├── growth/   # GrowthScore + 升级引擎
-│   │   ├── reflection/ # 反思引擎（ExtractorAgent）
-│   │   ├── sop/      # SOP DAG 执行器
-│   │   ├── prolog/   # scryer-prolog 业务规则
-│   │   ├── llm/      # Token 优化：Semantic Cache + Prefix Cache
-│   │   └── event/    # NATS JetStream 事件总线
-│   └── migrations/   # PostgreSQL 迁移（advisory lock 防竞争）
-├── frontend/         # Next.js 15 前端
+│   │   ├── api/              # 36 REST endpoints
+│   │   ├── agent/            # State machine + lifecycle
+│   │   ├── auth/             # JWT (Access 15min / Refresh 7day)
+│   │   ├── memory/           # 4-layer memory + vector retrieval
+│   │   ├── skill/            # SKILL.md parser + executor
+│   │   ├── growth/           # GrowthScore + level-up engine
+│   │   ├── reflection/       # Structured reflection (ExtractorAgent)
+│   │   ├── sop/              # DAG workflow runner
+│   │   ├── prolog/           # scryer-prolog rule engine
+│   │   ├── llm/              # 3-layer token cache
+│   │   └── event/            # NATS JetStream publisher/consumer
+│   └── migrations/           # PostgreSQL migrations (advisory lock)
+├── frontend/                 # Next.js 15 — App Router
 │   └── src/
-│       ├── app/      # App Router 页面
-│       ├── components/ # shadcn/ui 组件
-│       ├── store/    # Zustand 状态管理
-│       └── lib/      # API Client + 工具函数
-├── infra/            # Docker Compose（PG + Redis + NATS）
-├── docs/             # 规划文档
-│   ├── TDD.md        # 技术设计文档
-│   ├── TECH_SPEC.md  # 完整技术规格（DDL/WS/API/部署）
-│   └── TASK_LIST.md  # 实施任务总清单
-└── .github/
-    └── workflows/    # CI（Rust test + clippy + fmt；TS type-check + lint）
+│       ├── app/              # Pages
+│       ├── components/       # shadcn/ui + custom
+│       ├── store/            # Zustand slices
+│       └── lib/              # API client + utilities
+├── infra/
+│   └── docker-compose.yml    # PG16+pgvector · Redis · NATS
+├── docs/
+│   ├── TDD.md                # Technical Design Document
+│   ├── TECH_SPEC.md          # Full spec: DDL · WS · API · Prolog · Deploy
+│   └── TASK_LIST.md          # 212-task implementation checklist
+└── .github/workflows/ci.yml  # Rust test/clippy/fmt · TS type-check/lint
 ```
 
 ---
 
-## 开发计划
+## Roadmap
 
-> 总计 10 个 Sprint，约 16 周完成 MVP。完整任务清单见 [docs/TASK_LIST.md](docs/TASK_LIST.md)。
+| Sprint | Weeks | Goal |
+|--------|-------|------|
+| S0 | 1–2 | Infrastructure · Auth · Agent CRUD |
+| S1 | 3–4 | Memory system · pgvector · token budget |
+| S2 | 5 | 3-layer token cache · LLMLingua-2 |
+| S3 | 6–7 | Task execution · ReAct · NATS events |
+| S4 | 8 | Skill system · SKILL.md runtime |
+| S5 | 9–10 | SOP DAG · Prolog rule engine |
+| S6 | 11–12 | Reflection engine · Growth system |
+| S7 | 13–14 | Frontend core pages |
+| S8 | 15 | WebSocket · Growth UI · Skill tree |
+| S9 | 16 | QA · Railway deploy · benchmarks |
 
-| Sprint | 周期 | 主要目标 | 关键产出 |
-|--------|------|---------|---------|
-| **S0** | Week 1-2 | 基础设施 + Auth + Agent CRUD | DB 迁移跑通、JWT 登录、Agent 创建/激活 |
-| **S1** | Week 3-4 | 记忆系统基础 | 四层记忆写入/检索、pgvector 索引、Token 注入预算 |
-| **S2** | Week 5 | Token 优化 | Semantic Cache、Prefix Cache、LLMLingua-2 压缩 |
-| **S3** | Week 6-7 | 任务执行引擎 | Task 状态机、ReAct executor、NATS 事件总线 |
-| **S4** | Week 8 | Skill 系统 | SKILL.md 解析、Skill 执行、Agent 自建 Skill |
-| **S5** | Week 9-10 | SOP + Prolog | DAG 执行器、5 个 Prolog 业务规则文件接入 |
-| **S6** | Week 11-12 | Reflection + Growth | 反思引擎、GrowthScore、L1-L6 升级逻辑 |
-| **S7** | Week 13-14 | 前端核心页面 | Agent 列表/详情、任务面板、记忆可视化 |
-| **S8** | Week 15 | 前端完善 | 成长曲线、技能树、实时 WebSocket 推送 |
-| **S9** | Week 16 | 联调 + 部署 | Railway 部署、E2E 测试、性能基准 |
-
-### 当前进度
-
-```
-S0  ░░░░░░░░░░  0%   ← 下一步启动
-S1  ░░░░░░░░░░  0%
-...
-```
-
-> 每个 Sprint 采用 4 线并行开发（BE-A / BE-B / FE / DevOps），详见任务清单。
+Full task breakdown: [docs/TASK_LIST.md](docs/TASK_LIST.md)
 
 ---
 
-## 文档
+## Documentation
 
-- [技术设计文档 (TDD)](docs/TDD.md)
-- [技术规格详细](docs/TECH_SPEC.md) — DDL / WebSocket / API / Prolog / 错误码 / 部署 / SKILL.md 模板
-- [实施任务总清单](docs/TASK_LIST.md) — 212 条可执行任务，含代码萃取路径和 Sprint 分配
-
----
-
-## Token 成本优化
-
-三层缓存架构，预计节省 75-90% LLM Token 成本：
-
-```
-请求 → Semantic Cache（pgvector 相似度 ≥ 0.92，直接返回）
-     → Prefix Cache（Anthropic cache_control，$0.30/M vs $3.00/M）
-     → LLM（LLMLingua-2 写时压缩，4-20x 压缩比）
-```
-
-100 个 Agent 日运营成本估算：**~$1.2-3.6/day**（无缓存约 $12/day）
+| Document | Description |
+|----------|-------------|
+| [TDD.md](docs/TDD.md) | Architecture, module boundaries, source code references |
+| [TECH_SPEC.md](docs/TECH_SPEC.md) | Complete DDL · WebSocket protocol · API schema · Prolog rules · Error codes · Deployment |
+| [TASK_LIST.md](docs/TASK_LIST.md) | 212 actionable tasks with source paths, targets, and sprint assignments |
 
 ---
 
-## Agent 7 状态机
+## Contributing
 
-```
-Created → Activated → Working → Reflecting → Evolving → Activated（循环）
-                                          ↘ Failed（可恢复）
-                                          ↘ Archived（终止）
+This project is in active development. Contributions, issues, and design feedback are welcome.
+
+```bash
+cargo test          # run backend tests
+cargo clippy        # lint
+cd frontend && npm run type-check
 ```
 
 ---
 
 ## License
 
-MIT
+MIT © 2026 HARP Contributors
